@@ -1,14 +1,16 @@
 {
-  "enabledPlugins": {
-    "commit-commands@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true
-  },
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
+      "Bash(uv:*)",
       "Bash(find:*)",
-      "Bash(ls:*)",
+      "Bash(mv:*)",
       "Bash(grep:*)",
+      "Bash(npm:*)",
+      "Bash(ls:*)",
+      "Bash(cp:*)",
+      "Write",
+      "Bash(chmod:*)",
       "Bash(touch:*)"
     ],
     "deny": [
@@ -33,5 +35,11 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "commit-commands@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
   }
 }
