@@ -27,7 +27,22 @@ link() {
 
 link "settings.json"
 link "skills"
+link "agents"
 link "plugins/known_marketplaces.json"
 
 echo ""
-echo "Done. Run 'git -C $REPO_DIR remote add origin <url>' to connect to a remote."
+echo "Done."
+echo ""
+
+# Print plugin install instructions if list exists
+PLUGINS_FILE="$REPO_DIR/plugins/installed.txt"
+if [[ -f "$PLUGINS_FILE" ]]; then
+    plugins=$(grep -v '^\s*#' "$PLUGINS_FILE" | grep -v '^\s*$')
+    if [[ -n "$plugins" ]]; then
+        echo "Plugins to install — run these in Claude Code:"
+        while IFS= read -r plugin; do
+            echo "  /plugin install $plugin"
+        done <<< "$plugins"
+        echo ""
+    fi
+fi

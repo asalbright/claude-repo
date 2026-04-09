@@ -1,0 +1,4 @@
+# Plugins to install after a fresh Claude Code setup.
+# Run: /plugin install <name> in Claude Code for each one.
+
+commit-commands@claude-plugins-official
