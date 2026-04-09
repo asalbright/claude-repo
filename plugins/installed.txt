@@ -2,3 +2,4 @@
 # Run: /plugin install <name> in Claude Code for each one.
 
 commit-commands@claude-plugins-official
+pyright-lsp@claude-plugins-official

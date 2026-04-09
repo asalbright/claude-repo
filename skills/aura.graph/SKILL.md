@@ -42,8 +42,6 @@ The argument is either:
 
 ### Structural Rules
 
-These rules prevent the misunderstandings documented in `.aura/retrospectives/2026-02-22_multi-epic-graph-build.md`.
-
 1. **Epics are containers, not pipeline nodes.** An epic's only job is to group children and enforce "can't close until all children close" via `bd epic close-eligible`. Epics should never have upward deps from their children (`child blocks epic` = cycle).
 
 2. **Phase sequencing is epic-to-epic.** If Phase B must wait for Phase A, add `bd dep add <phase-B-epic> <phase-A-epic>`. Do NOT add cross-phase child-to-child deps — this creates redundant gating and undermines the phase container model.

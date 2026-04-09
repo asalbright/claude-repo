@@ -18,9 +18,9 @@ The argument is a vision description - what the user wants to achieve.
 
 1. **Discover templates:**
    ```bash
-   ls .claude/templates/
+   ls .claude/templates/ 2>/dev/null || echo "NO_TEMPLATES"
    ```
-   Read each template to understand its sections.
+   If templates exist, read each to understand its sections. If `.claude/templates/` is missing, proceed using built-in template structure (feature.md: Description, Problem/Solution, Research Findings, Relevant Files, Implementation Plan, Verification, Acceptance Criteria — chore.md: Description, Current/Desired State, Relevant Files, Implementation Plan, Verification, Acceptance Criteria). Suggest running `/aura.init` to scaffold templates for future use.
 
 2. **Select template** - Choose the best fit. Default to `feature.md` if unsure.
 

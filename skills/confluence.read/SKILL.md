@@ -17,19 +17,27 @@ Check if credentials are set:
 [ -n "$MARK_USERNAME" ] && [ -n "$MARK_PASSWORD" ] && [ -n "$MARK_BASE_URL" ] && echo "CREDS_OK" || echo "CREDS_MISSING"
 ```
 
-If `CREDS_MISSING`, use **AskUserQuestion** to ask for:
-- Confluence email (username)
-- API token (password) — direct the user to https://id.atlassian.com/manage-profile/security/api-tokens if needed
+If `CREDS_MISSING`, use **AskUserQuestion** to ask for any that are unset:
+- Confluence email (username) → `MARK_USERNAME`
+- API token (password) → `MARK_PASSWORD` — direct the user to https://id.atlassian.com/manage-profile/security/api-tokens if needed
+- Confluence base URL → `MARK_BASE_URL` — e.g., `https://your-org.atlassian.net/wiki`
+
+Also check for the default space:
+
+```bash
+[ -n "$MARK_SPACE" ] && echo "SPACE_OK" || echo "SPACE_MISSING"
+```
+
+If `SPACE_MISSING`, ask: "What is your default Confluence space key? (e.g., `ENG`, `DOCS`, `TEC`)" and set `MARK_SPACE`.
 
 Then set env vars for this session:
 
 ```bash
 export MARK_USERNAME="<email>"
 export MARK_PASSWORD="<token>"
-export MARK_BASE_URL="https://apptronik.atlassian.net/wiki"
+export MARK_BASE_URL="<base-url>"
+export MARK_SPACE="<space-key>"
 ```
-
-The base URL is always `https://apptronik.atlassian.net/wiki`. Do not ask for it.
 
 ## Phase 1: Resolve Page ID
 
@@ -54,7 +62,8 @@ auth = base64.b64encode(f"{username}:{password}".encode()).decode()
 headers = {"Authorization": f"Basic {auth}", "Accept": "application/json"}
 
 title = "<user-input>"
-cql = urllib.parse.quote(f'space=TEC AND title="{title}"')
+space = os.environ['MARK_SPACE']
+cql = urllib.parse.quote(f'space={space} AND title="{title}"')
 req = urllib.request.Request(
     f"{base_url}/rest/api/content/search?cql={cql}&limit=5",
     headers=headers
@@ -108,7 +117,8 @@ print(f"Title: {title}")
 print(f"Page ID: {page_id}")
 print(f"Version: {version}")
 print(f"Location: {ancestors}")
-print(f"URL: {base_url.replace('/wiki','')}/wiki/spaces/TEC/pages/{page_id}")
+space = os.environ['MARK_SPACE']
+print(f"URL: {base_url.replace('/wiki','')}/wiki/spaces/{space}/pages/{page_id}")
 print(f"Children: {children['size']}")
 for c in children["results"]:
     print(f"  - {c['title']} (id: {c['id']})")

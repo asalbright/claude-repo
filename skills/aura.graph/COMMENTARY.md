@@ -49,8 +49,8 @@ Graph works well for: writing 10 Confluence pages, migrating a database across 3
 ### Invocation
 
 ```
-/aura.graph "Write 10 Confluence documentation pages for Design Lab modules"
-/aura.graph .aura/confluence/1_draft/00-hierarchy.md
+/aura.graph "Write 10 API reference pages for each service endpoint"
+/aura.graph .aura/plans/queue/my-project/graph-plan.md
 ```
 
 ### What Happens
@@ -83,7 +83,7 @@ Where graph IS useful for code:
 
 ## Evolution Notes
 
-The graph skill was born from a real session where we iteratively built a 28-bead graph for Confluence documentation. The key lessons were:
+The graph skill was born from a real session where we iteratively built a 28-bead graph for a multi-deliverable documentation project. The key lessons were:
 
 1. **Epics are containers, not pipeline nodes** — this took 3 iterations to get right
 2. **Parent-child and blocking deps serve different purposes** — conflating them creates cycles

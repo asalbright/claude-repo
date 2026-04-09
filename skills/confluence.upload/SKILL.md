@@ -28,19 +28,27 @@ Check if credentials are set:
 [ -n "$MARK_USERNAME" ] && [ -n "$MARK_PASSWORD" ] && [ -n "$MARK_BASE_URL" ] && echo "CREDS_OK" || echo "CREDS_MISSING"
 ```
 
-If `CREDS_MISSING`, use **AskUserQuestion** to ask for:
-- Confluence email (username)
-- API token (password) — direct the user to https://id.atlassian.com/manage-profile/security/api-tokens if needed
+If `CREDS_MISSING`, use **AskUserQuestion** to ask for any that are unset:
+- Confluence email (username) → `MARK_USERNAME`
+- API token (password) → `MARK_PASSWORD` — direct the user to https://id.atlassian.com/manage-profile/security/api-tokens if needed
+- Confluence base URL → `MARK_BASE_URL` — e.g., `https://your-org.atlassian.net/wiki`
+
+Also check for the default space:
+
+```bash
+[ -n "$MARK_SPACE" ] && echo "SPACE_OK" || echo "SPACE_MISSING"
+```
+
+If `SPACE_MISSING`, ask: "What is your Confluence space key? (e.g., `ENG`, `DOCS`, `TEC`)" and set `MARK_SPACE`.
 
 Then set env vars for this session:
 
 ```bash
 export MARK_USERNAME="<email>"
 export MARK_PASSWORD="<token>"
-export MARK_BASE_URL="https://apptronik.atlassian.net/wiki"
+export MARK_BASE_URL="<base-url>"
+export MARK_SPACE="<space-key>"
 ```
-
-The base URL is always `https://apptronik.atlassian.net/wiki`. Do not ask for it.
 
 ## Phase 2: Resolve Input Files
 
@@ -59,35 +67,25 @@ If a file lacks `<!-- Space: -->` and `<!-- Parent: -->` headers, they must be a
 
 ### Default location
 
-The default Confluence destination is:
+Use **AskUserQuestion** to ask where the page should live:
 
-```
-Space: TEC
-Parent chain: Software and Controls > Sub-team Documentation > Simulation Team > Design Lab > Design Lab: Documentation
-```
+"Where should this page live on Confluence? Provide the parent page title (or a chain like `Docs > API Reference > Services`)."
 
-Use **AskUserQuestion** to confirm or override:
-
-"Where should this page live on Confluence?"
-
-Options:
-- **Design Lab: Documentation** (default) — `Technology > Software and Controls > Sub-team Documentation > Simulation Team > Design Lab > Design Lab: Documentation`
-- **Custom location** — I'll provide the parent page path
+The space comes from `MARK_SPACE`. The parent chain is what the user provides.
 
 ### Header format
 
-For the default location, prepend these headers before the first line of content:
+Prepend these headers before the first line of content:
 
 ```markdown
-<!-- Space: TEC -->
-<!-- Parent: Software and Controls -->
-<!-- Parent: Sub-team Documentation -->
-<!-- Parent: Simulation Team -->
-<!-- Parent: Design Lab -->
-<!-- Parent: Design Lab: Documentation -->
+<!-- Space: <MARK_SPACE> -->
+<!-- Parent: <parent-page-title> -->
+<!-- Parent: <child-parent-if-needed> -->
 ```
 
-For child pages that should nest under another page being uploaded (e.g., hub + children), add an additional `<!-- Parent: -->` line with the hub page title.
+For the user's provided parent chain (e.g., `Docs > API > Services`), each `>` segment becomes a separate `<!-- Parent: -->` line.
+
+For child pages that should nest under another page being uploaded in the same batch, add an additional `<!-- Parent: -->` line with the hub page title.
 
 ### Title handling
 
@@ -180,7 +178,7 @@ Print a summary:
 
 | File | Page Title | URL |
 |------|-----------|-----|
-| file.md | Page Title | https://apptronik.atlassian.net/wiki/... |
+| file.md | Page Title | https://your-org.atlassian.net/wiki/... |
 
 Mermaid cleanup: applied to N pages
 ```
