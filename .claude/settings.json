@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(uv:*)",
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "Bash(grep:*)",
+      "Bash(npm:*)",
+      "Bash(ls:*)",
+      "Bash(cp:*)",
+      "Write",
+      "Bash(chmod:*)",
+      "Bash(touch:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"$CLAUDE_PROJECT_DIR\"/.aura/AURA.md 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "bd prime 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
