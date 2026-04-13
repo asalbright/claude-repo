@@ -9,20 +9,21 @@
       "Bash(npm:*)",
       "Bash(ls:*)",
       "Bash(cp:*)",
-      "Write",
       "Bash(chmod:*)",
       "Bash(touch:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
-      "Bash(rm -rf:*)"
+      "Bash(rm -rf:*)",
+      "Bash(sudo:*)"
     ]
   },
   "enabledPlugins": {
     "commit-commands@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true
   }
 }
