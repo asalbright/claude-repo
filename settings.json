@@ -19,23 +19,6 @@
       "Bash(rm -rf:*)"
     ]
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat \"$CLAUDE_PROJECT_DIR\"/.aura/AURA.md 2>/dev/null || true"
-          },
-          {
-            "type": "command",
-            "command": "bd prime 2>/dev/null || echo 'Beads not initialized. Run /aura.init to set up issue tracking for this project.'"
-          }
-        ]
-      }
-    ]
-  },
   "enabledPlugins": {
     "commit-commands@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,

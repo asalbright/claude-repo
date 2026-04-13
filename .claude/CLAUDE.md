@@ -9,8 +9,6 @@ settings.json          # Global config (permissions, hooks, plugins) → symlink
 skills/                # Custom slash commands → symlinked to ~/.claude/skills/
 agents/                # Custom agent definitions → symlinked to ~/.claude/agents/
 plugins/               # Plugin tracking (installed.txt, known_marketplaces.json)
-.claude/templates/     # Scope templates for /aura.scope (project-local to this repo)
-.aura/AURA.md          # Session context for working in this repo
 ```
 
 ## Working in This Repo
@@ -39,13 +37,3 @@ bash install.sh
 
 Re-run after adding new symlink targets (e.g., a new top-level directory that should be linked).
 
-## Aura Skills
-
-The `aura.*` skills form a planning and execution workflow:
-
-1. `/aura.vision` — Refine a raw idea into a structured vision document
-2. `/aura.scope` — Research codebase, produce a scope file, create a beads epic with tasks
-3. `/aura.execute <epic-id>` — Implement tasks via sub-agents with review gates
-4. `/aura.graph` — Build a multi-phase task graph for large projects (10+ deliverables)
-5. `/aura.rapid_dev` — Vision → beads → implementation in one pass (simple work only)
-6. `/aura.init` — Initialize beads and scaffold `.aura/` for a new project
