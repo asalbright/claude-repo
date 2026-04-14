@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "claude_repo",
+  "project_id": "61280a1e-cadd-4d77-a75b-e05bd38b58f1"
+}
