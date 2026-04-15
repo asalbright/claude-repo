@@ -29,6 +29,7 @@ link "settings.json"
 link "skills"
 link "agents"
 link "plugins/known_marketplaces.json"
+link ".CLAUDE.md" "CLAUDE.md"
 
 echo ""
 echo "Done."
