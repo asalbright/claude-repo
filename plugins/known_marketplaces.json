@@ -4,7 +4,7 @@
       "source": "github",
       "repo": "anthropics/claude-plugins-official"
     },
-    "installLocation": "/Users/andrewalbright/.claude/plugins/marketplaces/claude-plugins-official",
-    "lastUpdated": "2026-04-09T19:16:04.610Z"
+    "installLocation": "${HOME}/.claude/plugins/marketplaces/claude-plugins-official",
+    "lastUpdated": "2026-04-16T16:09:03.552Z"
   }
 }
