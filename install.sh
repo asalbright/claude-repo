@@ -30,12 +30,6 @@ link "skills"
 link "agents"
 link ".CLAUDE.md" "CLAUDE.md"
 
-# Generate known_marketplaces.json with real HOME path (not a symlink — needs substitution)
-MARKETPLACES_DST="$CLAUDE_DIR/plugins/known_marketplaces.json"
-mkdir -p "$(dirname "$MARKETPLACES_DST")"
-sed "s|\${HOME}|$HOME|g" "$REPO_DIR/plugins/known_marketplaces.json" > "$MARKETPLACES_DST"
-echo "  Generated: $MARKETPLACES_DST"
-
 echo ""
 echo "Done."
 echo ""
