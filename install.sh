@@ -27,7 +27,6 @@ link() {
 
 link "settings.json"
 link "skills"
-link "agents"
 link ".CLAUDE.md" "CLAUDE.md"
 
 echo ""

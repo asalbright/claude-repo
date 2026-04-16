@@ -10,7 +10,10 @@
       "Bash(ls:*)",
       "Bash(cp:*)",
       "Bash(chmod:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(ln:*)",
+      "Bash(cat:*)",
+      "Bash(bd:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",

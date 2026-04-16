@@ -1,19 +1,18 @@
 # Claude Config Repo
 
-This is a version-controlled Claude Code configuration repository. Skills, agents, and settings are symlinked into `~/.claude/` via `install.sh` so they are globally available across all projects.
+This is a version-controlled Claude Code configuration repository. Skills and settings are symlinked into `~/.claude/` via `install.sh` so they are globally available across all projects.
 
 ## Structure
 
 ```
 settings.json          # Global config (permissions, hooks, plugins) → symlinked to ~/.claude/settings.json
 skills/                # Custom slash commands → symlinked to ~/.claude/skills/
-agents/                # Custom agent definitions → symlinked to ~/.claude/agents/
 plugins/               # Plugin tracking (installed.txt, known_marketplaces.json)
 ```
 
 ## Working in This Repo
 
-When adding or modifying skills/agents, changes take effect immediately — no restart needed (Claude Code hot-reloads `~/.claude/skills/` via the symlink).
+When adding or modifying skills, changes take effect immediately — no restart needed (Claude Code hot-reloads `~/.claude/skills/` via the symlink).
 
 ### Skills live in `skills/<name>/SKILL.md`
 
@@ -23,11 +22,6 @@ Frontmatter fields:
 - `allowed-tools` — restrict which tools the skill can use
 - `disable-model-invocation: true` — skill runs as a prompt, not a model call (use for orchestrator skills)
 - `argument-hint` — shown to user when invoking
-
-### Agents live in `agents/<name>.md`
-
-Frontmatter fields:
-- `name`, `description`, `tools`, `model`
 
 ## Install / Re-install
 
