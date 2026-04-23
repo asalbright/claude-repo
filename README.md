@@ -1,64 +1,41 @@
 # Claude Config Repo
 
-Version-controlled Claude Code configuration: settings, skills, agents, and plugins — symlinked into `~/.claude/` so changes here apply instantly.
+Version-controlled Claude Code configuration: global `CLAUDE.md`, `settings.json`, agents, commands, scripts, and skills — symlinked into `~/.claude/` so changes here apply instantly.
 
-## What's Included
+## Layout
 
-| Path | Purpose |
-|------|---------|
-| `settings.json` | Global permissions, hooks, and Claude Code preferences |
-| `skills/` | Custom slash commands (`/commit`, `/review`, etc.) |
-| `agents/` | Custom agent definitions (e.g., `researcher`) |
-| `plugins/installed.txt` | Canonical list of plugins to install |
+Everything that installs into `~/.claude/` lives under the `claude-repo/` subdirectory, mirroring the target layout:
+
+| Source | Symlinked to |
+|--------|--------------|
+| `claude-repo/CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `claude-repo/settings.json` | `~/.claude/settings.json` |
+| `claude-repo/agents/` | `~/.claude/agents/` |
+| `claude-repo/commands/` | `~/.claude/commands/` |
+| `claude-repo/scripts/` | `~/.claude/scripts/` |
+| `claude-repo/skills/` | `~/.claude/skills/` |
+
+The top-level `CLAUDE.md` and `README.md` document the repo itself and are **not** linked into `~/.claude/`.
 
 ## Install
 
 ```bash
-git clone <this-repo> ~/Documents/claude-repo
-cd ~/Documents/claude-repo
+git clone <this-repo> ~/Documents/Github/claude-repo
+cd ~/Documents/Github/claude-repo
 bash install.sh
 ```
 
-The script backs up any existing `~/.claude` files and replaces them with symlinks into this repo. Run it again after pulling to pick up new entries.
+`install.sh` backs up any existing real files at the target paths to `*.bak` and replaces them with symlinks into this repo. It's safe to re-run after pulling to pick up new entries.
 
-### Plugins
+## Plugins
 
-After running `install.sh`, the script prints the plugins you need to install. Run each one inside Claude Code:
+Plugins are declared inline in `claude-repo/settings.json` under `enabledPlugins` and `extraKnownMarketplaces`. Add a plugin by editing that file and committing — no separate install step.
 
-```
-/plugin install commit-commands@claude-plugins-official
-```
+## Adding things
 
-To add a plugin to the canonical list so others pick it up:
+### A skill
 
-1. Add the plugin name to `plugins/installed.txt`
-2. Commit and push
-3. Anyone who pulls and re-runs `install.sh` will see the install prompt
-
-## Usage
-
-### Skills (slash commands)
-
-Skills live in `skills/` and are immediately available as `/skill-name` in Claude Code.
-
-| Skill | Description |
-|-------|-------------|
-| `/commit` | Create a well-formatted conventional commit |
-| `/review` | Review recent changes for quality, security, and style issues |
-| `/confluence.read` | Read a Confluence page |
-| `/confluence.upload` | Upload markdown to Confluence |
-
-### Agents
-
-Custom agents live in `agents/` and are available to Claude Code sub-agent spawning.
-
-| Agent | Description |
-|-------|-------------|
-| `researcher` | Deep codebase research — traces data flow, maps dependencies, returns file-referenced summaries |
-
-### Adding a Skill
-
-1. Create `skills/<name>/SKILL.md` with a frontmatter header and prompt body:
+Create `claude-repo/skills/<name>/SKILL.md` with frontmatter:
 
 ```markdown
 ---
@@ -69,11 +46,11 @@ description: What this skill does
 Instructions for the skill...
 ```
 
-2. It's immediately available as `/my-skill` — no restart needed.
+Available as `/my-skill` immediately — no restart.
 
-### Adding an Agent
+### An agent
 
-Create `agents/<name>.md` with frontmatter:
+Create `claude-repo/agents/<name>.md` with frontmatter:
 
 ```markdown
 ---
@@ -86,10 +63,14 @@ model: sonnet
 System prompt for the agent...
 ```
 
+### A slash command
+
+Drop a markdown file into `claude-repo/commands/` (or a namespaced subdirectory like `commands/vibe/`). The path becomes the command name (e.g. `commands/vibe/execute.md` → `/vibe:execute`).
+
+### A hook script
+
+Add the script to `claude-repo/scripts/` and reference it from `claude-repo/settings.json` as `~/.claude/scripts/<name>` — the symlink resolves the path at runtime.
+
 ## Settings
 
-`settings.json` controls global Claude Code behavior:
-
-- **Permissions** — pre-approved and denied shell commands (avoids confirmation prompts for safe ops like `mkdir`, `uv`, `ls`)
-
-To modify permissions or hooks, edit `settings.json` in this repo — the symlink means the change takes effect immediately.
+`claude-repo/settings.json` controls global Claude Code behavior: permissions, hooks, model, and enabled plugins. Because it's symlinked, edits take effect immediately.

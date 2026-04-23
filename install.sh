@@ -2,14 +2,20 @@
 set -e
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$REPO_DIR/claude-repo"
 CLAUDE_DIR="$HOME/.claude"
 
-echo "Setting up Claude config symlinks from: $REPO_DIR"
+echo "Setting up Claude config symlinks from: $SRC_DIR"
 
 # Backup a real file/dir and replace with symlink
 link() {
-    local src="$REPO_DIR/$1"
+    local src="$SRC_DIR/$1"
     local dst="$CLAUDE_DIR/${2:-$1}"
+
+    if [[ ! -e "$src" ]]; then
+        echo "  Skipping (missing source): $src"
+        return
+    fi
 
     # Backup existing real file/dir (skip if already a symlink)
     if [[ -e "$dst" && ! -L "$dst" ]]; then
@@ -26,22 +32,11 @@ link() {
 }
 
 link "settings.json"
+link "CLAUDE.md"
 link "skills"
-link ".CLAUDE.md" "CLAUDE.md"
+link "agents"
+link "commands"
+link "scripts"
 
 echo ""
 echo "Done."
-echo ""
-
-# Print plugin install instructions if list exists
-PLUGINS_FILE="$REPO_DIR/plugins/installed.txt"
-if [[ -f "$PLUGINS_FILE" ]]; then
-    plugins=$(grep -v '^\s*#' "$PLUGINS_FILE" | grep -v '^\s*$')
-    if [[ -n "$plugins" ]]; then
-        echo "Plugins to install — run these in Claude Code:"
-        while IFS= read -r plugin; do
-            echo "  /plugin install $plugin"
-        done <<< "$plugins"
-        echo ""
-    fi
-fi
