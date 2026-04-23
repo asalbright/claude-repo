@@ -22,7 +22,7 @@ Ask the user clarifying questions until the scope, constraints, and definition o
 
 Do not skip this step. Vague Engineer Mode input produces vague beads issues, which is the failure mode we're trying to prevent.
 
-If the user's answers reference parts of the codebase you're unfamiliar with, spawn a `/vibe:explore` agent to gather context before proceeding to step 2 — a plan built on a misread of the code will need to be thrown away.
+If the user's answers reference parts of the codebase you're unfamiliar with, use the `explore-scout` subagent to gather context before proceeding to step 2 — a plan built on a misread of the code will need to be thrown away.
 
 ## 2. Build the minimal graph
 

@@ -29,7 +29,7 @@ The parent agent passes you an issue ID (e.g., `bd-42`) in the task prompt. If t
 4. **Implement strictly to AC.** Touch only what the acceptance criteria require. Out-of-scope items from the issue body are non-negotiable boundaries, not suggestions.
 
 5. **Apply the Discovery Rule for anything outside AC.** If you find a bug, tech-debt item, or follow-up that is NOT covered by the current issue:
-   - Create a new beads issue for it via `bd create` with a full Issue Shape (title, context, AC, out-of-scope, verification).
+   - Create a new beads issue for it via `bd create` with a full Issue Shape (title, context, AC, out-of-scope, verification). As a subagent, use `bd create` directly — not `/vibe:bd-new`.
    - Link it with `bd dep add <current-or-new> <other>` when there's a real dependency.
    - Continue with the original task. Do NOT pivot.
    - Include the new issue ID in your report.

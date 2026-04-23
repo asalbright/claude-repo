@@ -12,7 +12,7 @@ Autonomous end-to-end: plan briefly, file beads, execute. No stopping for approv
 ## 0. Preflight
 
 - If `$ARGUMENTS` is empty, ask the user for a one-line task description.
-- Check SessionStart status. If not `beads: ready`, ask the user to install/init, fall back to `TODO.md`, or proceed untracked (never silent).
+- Check SessionStart status. If not `beads: ready`, ask the user to install/initialize. Do not proceed until resolved.
 
 ## 1. Triage: trivial, quick, or too big?
 
@@ -26,7 +26,7 @@ Classify the task:
 
 Break the task into 1–3 subtasks. Do NOT build an Epic > Story > Task > Subtask tree — that's Engineer Mode's job. A flat list is fine.
 
-Predict the file scope for each subtask (same logic as `/vibe:execute` step 2). This informs whether execution can parallelize.
+Predict the file scope for each subtask (same logic as `/vibe:execute` step 4). This informs whether execution can parallelize.
 
 ## 3. File beads
 
@@ -40,7 +40,7 @@ Skip this step if step 1 classified the task as trivial.
 
 **Trivial path:** just do the work with Edit/Write directly. Run any obvious verification (compile, test, the specific behavior the user asked about). Then commit the changed files directly:
 
-   ```
+   ```bash
    git commit path/to/file1 path/to/file2 -m "$(cat <<'EOF'
    <one-line description of what changed>
    EOF
@@ -63,7 +63,7 @@ For each non-trivial subtask, run the issue's Verification steps and close with 
 
 Concise summary to the user:
 
-```
+```text
 /vibe:express summary
 ──────────────────────
 Task: <original request>

@@ -24,8 +24,7 @@ Every issue must be self-contained — an agent with no knowledge of this conver
 
 1. Draft the title and each section from `$ARGUMENTS` plus surrounding conversation context.
 2. If any section would be empty or vague (especially AC and Verification), ask the user to clarify. Do not fabricate acceptance criteria.
-3. Show the user the drafted issue and confirm before creating.
-4. Create the issue using `bd create`. For single-line fields use flags; for multi-line descriptions use `--body-file -` with a heredoc to avoid shell-escape hazards:
+3. Create the issue using `bd create`. For single-line fields use flags; for multi-line descriptions use `--body-file -` with a heredoc to avoid shell-escape hazards:
 
    ```bash
    bd create \
@@ -48,6 +47,6 @@ Every issue must be self-contained — an agent with no knowledge of this conver
 
    For dependencies, either pass `--deps "bd-abc,bd-def"` at creation time, or run `bd dep add <new-id> <blocker-id>` afterward.
 
-5. Capture the issue ID from stdout (use `--silent` for ID-only output) and report it to the caller.
+4. Capture the issue ID from stdout (use `--silent` for ID-only output) and report it to the caller.
 
 If the SessionStart status shows `beads: uninstalled` or `beads: uninitialized`, stop and resolve that first — do not proceed with issue creation.

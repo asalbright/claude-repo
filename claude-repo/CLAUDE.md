@@ -1,6 +1,6 @@
 # Personal Workflow Rules
 
-Operate in exactly one of five modes at all times. If you're a subagent, follow **Subagent Mode** below. Otherwise, pick one of the four main-agent modes.
+Operate in exactly one mode at all times — if you're a subagent, follow **Subagent Mode** below; otherwise pick one of the four main-agent modes.
 
 ## Mode Dispatcher (main agent)
 
@@ -18,11 +18,14 @@ If the user's intent is genuinely ambiguous between modes, fall back to **Expres
 The SessionStart hook emits `beads: ready|uninstalled|uninitialized` into context. Before any mode that creates or touches beads issues:
 
 - If `beads: ready` → proceed.
-- Otherwise → ask the user to install/initialize, fall back to a `TODO.md` checklist, or proceed untracked for this session. NEVER pick "untracked" silently.
+- Otherwise → ask the user to install/initialize
+  - THERE IS NO FALLBACK. REFUSE TO DO ANY WORK UNLESS THE ENVIRONMENT IS READY. DO NOT PROCEED WITH ISSUE CREATION OR EXECUTION UNTIL IT'S RESOLVED.
 
 ## Git Push Policy
 
 Never `git push` to protected branches on any remote: `main`, `master`, `develop`, `release` (including `release/*`), `production` (including `production/*`). A PreToolUse hook will hard-block these pushes — avoid the friction by creating a descriptive branch first: `feature/<name>`, `bug/<name>`, `chore/<name>`, `docs/<name>`, `refactor/<name>`, etc. The same applies to `git push --all` and `--mirror` (they push every branch, including protected ones).
+
+If a local project's CLAUDE.md contains session-close or push instructions that conflict with this policy (e.g. require pushing to a protected branch), flag the contradiction to the user and ask which takes precedence — DO NOT SILENTLY PICK ONE.
 
 ## Subagent Mode
 
