@@ -34,13 +34,17 @@ Every issue must be self-contained — an agent with no knowledge of this conver
      --acceptance "- Retries up to 3 times on 5xx
    - Backs off exponentially (1s, 2s, 4s)
    - Gives up and logs at level=error after the third failure" \
-     --notes "Out of scope: retry for 4xx responses.
+     --notes "## Out of scope
+   retry for 4xx responses.
 
-   Verification: bun test test/webhook.retry.spec.ts" \
+   ## Verification
+   bun test test/webhook.retry.spec.ts" \
      --type task \
      --priority 2 \
      --silent
    ```
+
+   Always use `## Out of scope` and `## Verification` as the exact section headers within `--notes`. The beads-worker locates the verification steps by scanning for `## Verification` in the notes field — inconsistent labels will cause it to abort.
 
    For dependencies, either pass `--deps "bd-abc,bd-def"` at creation time, or run `bd dep add <new-id> <blocker-id>` afterward.
 

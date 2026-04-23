@@ -38,7 +38,16 @@ Skip this step if step 1 classified the task as trivial.
 
 ## 4. Execute
 
-**Trivial path:** just do the work with Edit/Write directly. Run any obvious verification (compile, test, the specific behavior the user asked about). Report what changed and note "tracking skipped — trivial work."
+**Trivial path:** just do the work with Edit/Write directly. Run any obvious verification (compile, test, the specific behavior the user asked about). Then commit the changed files directly:
+
+   ```
+   git commit path/to/file1 path/to/file2 -m "$(cat <<'EOF'
+   <one-line description of what changed>
+   EOF
+   )"
+   ```
+
+   Do NOT push. Report what changed and note "tracking skipped — trivial work."
 
 **Non-trivial path:** execute using the same machinery as `/vibe:execute`:
 

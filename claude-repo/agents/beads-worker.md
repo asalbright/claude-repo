@@ -34,9 +34,22 @@ The parent agent passes you an issue ID (e.g., `bd-42`) in the task prompt. If t
    - Continue with the original task. Do NOT pivot.
    - Include the new issue ID in your report.
 
-6. **Run verification.** Execute the exact steps from the issue's Verification section. If verification fails, iterate. Do not close the issue until verification passes. If you cannot make verification pass after a reasonable effort, abort and report what went wrong — leave the issue in_progress.
+6. **Run verification.** Find the `## Verification` entry in the issue's notes field and execute those exact steps. If there is no `## Verification` entry, abort — the issue is not properly shaped for execution. If verification fails, iterate. Do not close the issue until verification passes. If you cannot make verification pass after a reasonable effort, abort and report what went wrong — leave the issue in_progress.
 
-7. **Close.** Run `bd close <id> --reason "AC verified: <one-line>"`.
+7. **Commit.** Commit all files you touched by passing them directly to `git commit` — do NOT use `git add` first, as the staging area is shared with any parallel workers:
+
+   ```
+   git commit path/to/file1 path/to/file2 -m "$(cat <<'EOF'
+   <one-line summary of what was done>
+
+   Closes bd-<id>
+   EOF
+   )"
+   ```
+
+   Do NOT push. If `git status` shows no modified tracked files after your work, something is wrong — report it rather than closing with no commit.
+
+8. **Close.** Run `bd close <id> --reason "AC verified: <one-line>"`.
 
 ## Handling a wrong or stale issue
 

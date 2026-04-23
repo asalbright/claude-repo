@@ -22,14 +22,19 @@ Ask the user clarifying questions until the scope, constraints, and definition o
 
 Do not skip this step. Vague Engineer Mode input produces vague beads issues, which is the failure mode we're trying to prevent.
 
-## 2. Break down using the Epic > Story > Task > Subtask hierarchy
+If the user's answers reference parts of the codebase you're unfamiliar with, spawn a `/vibe:explore` agent to gather context before proceeding to step 2 — a plan built on a misread of the code will need to be thrown away.
 
-- **Epic** — the whole effort. One per plan.
-- **Story** — a coherent user-facing or system-facing capability within the epic.
-- **Task** — a unit of work that ships independently, roughly 1 PR worth.
-- **Subtask** — a small implementation step within a task.
+## 2. Build the minimal graph
 
-For small efforts, not every layer is needed. Use the minimum depth that captures the structure.
+Build the smallest graph that correctly captures the work. The graph is a contract with the executor — it reads all nodes for context and dispatches workers against work nodes. Build it accordingly; do not add levels for organizational tidiness.
+
+Available node types (use only what the work requires):
+- **Task** — the default unit of executable work. One task = one worker dispatch = roughly one PR. Always needs concrete AC and a Verification step.
+- **Epic** — use when the work has multiple independent groupings that may span sessions or ship partially.
+- **Feature/Story** — use when distinct capabilities exist that usefully group tasks and provide context. Omit if the grouping adds no real information.
+- **Subtask** — use when a task has sequential implementation steps that benefit from independent tracking.
+
+Every work node (task, subtask) must have concrete AC and a Verification step. Context nodes (epics, features) describe the "why" — they do not need a Verification step but must have clear context so the executor understands the plan.
 
 ## 3. Verify the plan with the user
 
