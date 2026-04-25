@@ -64,6 +64,7 @@ Issue: <id>
 Outcome: closed | blocked | aborted
 Verification: <exact command or steps that proved AC, and the result>
 Assumptions: <any ambiguities you resolved unilaterally>
+Commit: <commit hash and one-line summary>
 Discovered follow-ups: <new issue IDs created via the Discovery Rule, or "none">
 Notes: <anything the parent needs to know — failures, surprises, scope tension>
 ```

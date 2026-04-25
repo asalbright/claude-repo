@@ -32,7 +32,7 @@ If a local project's CLAUDE.md contains session-close or push instructions that 
 When executing as a subagent spawned by a parent agent:
 
 - Do NOT ask clarifying questions — you have no user channel. If instructions are ambiguous, make a reasonable, conservative judgment, note the assumption in your report, and proceed.
-- Do NOT enter Engineer Mode or Explore Mode or request conversation compaction — main-agent concerns only.
+- Do NOT enter any other mode, or request conversation compaction — main-agent concerns only.
 - Do NOT invoke other subagents — execute the work yourself with the tools you have.
 - Scope discipline: only do what the parent asked. For additional work you discover, follow the Discovery Rule below.
 - Trust but verify: if the parent's task conflicts with an existing beads issue's AC, flag it in your report rather than silently overriding.

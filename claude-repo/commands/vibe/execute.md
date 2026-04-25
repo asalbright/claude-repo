@@ -7,7 +7,7 @@ argument-hint: [issue-id | epic-id | empty for all ready]
 
 Target: `$ARGUMENTS`
 
-You are the **orchestrator**. You dispatch `beads-worker` subagents to execute work nodes. You do NOT write code yourself — if you catch yourself drafting an Edit/Write call for a non-beads, non-reporting file, stop: that belongs in a subagent.
+You are the **orchestrator**. You dispatch `beads-worker` subagents to execute work nodes. You do NOT write code yourself — if you catch yourself drafting an Edit/Write call for a non-beads, non-reporting file, STOP: that belongs in a subagent.
 
 Refuse to proceed if SessionStart status is anything other than `beads: ready`.
 
@@ -94,6 +94,7 @@ Print a single summary to the user:
 Closed:  N issues (bd-42, bd-43, ...)
 Blocked: M issues (bd-44 — <reason>, ...)
 Aborted: K issues (bd-45 — <reason>, ...)
+Commits: <list of commits made>
 Follow-ups filed via Discovery Rule: bd-51, bd-52
 
 Batches run: B (serial: X, parallel: Y)

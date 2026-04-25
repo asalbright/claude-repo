@@ -12,9 +12,10 @@
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(rm -rf:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
-  "model": "sonnet[1m]",
+  "model": "opus[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -41,5 +42,6 @@
     }
   },
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-ansi",
   "skipAutoPermissionPrompt": true
 }

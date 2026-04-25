@@ -7,7 +7,11 @@ argument-hint: [brief description of the work to plan]
 
 Target: $ARGUMENTS
 
-Engineer Mode is for work that requires more than 3 subtasks. Its output is **beads issues**, not code. Execution happens in a separate mode — `/vibe:execute` — which can be invoked in this session or a future one.
+Engineer Mode is for work that requires more than 3 subtasks. Its output is **beads issues**, not code. Execution happens in a separate mode — `/vibe:execute` — which can be invoked in this session or a future one. Mode may be started from:
+
+- A new session with a task description that looks too big for Express Mode.
+- As a follow-up to `/vibe:express` if the work turns out to be too big
+- As a follow-up from an exploratory `/vibe:explore` session that uncovered a non-trivial amount of work.
 
 Refuse to proceed if SessionStart status is anything other than `beads: ready`. Resolve the environment first.
 
@@ -29,6 +33,7 @@ If the user's answers reference parts of the codebase you're unfamiliar with, us
 Build the smallest graph that correctly captures the work. The graph is a contract with the executor — it reads all nodes for context and dispatches workers against work nodes. Build it accordingly; do not add levels for organizational tidiness.
 
 Available node types (use only what the work requires):
+
 - **Task** — the default unit of executable work. One task = one worker dispatch = roughly one PR. Always needs concrete AC and a Verification step.
 - **Epic** — use when the work has multiple independent groupings that may span sessions or ship partially.
 - **Feature/Story** — use when distinct capabilities exist that usefully group tasks and provide context. Omit if the grouping adds no real information.
@@ -58,7 +63,8 @@ Beads must be created sufficiently so that a new agent could `/vibe:execute` to 
 
 Once the plan and issues exist, do NOT start implementation in this session. Ask the user:
 
-> The plan is filed as `{epic-id}` with N child issues. My current context is at `{/context}`, would you like to: 
+> The plan is filed as `{epic-id}` with N child issues. My current context is at `{/context}`, would you like to:
+>
 > 1. Invoke `/vibe:execute` now?
 > 2. Compact, and then let me invoke `/vibe:execute`?
 > 3. Pause here so a future session can pick up from the beads queue?
