@@ -47,9 +47,11 @@ When agents return, merge their reports into a single answer for the user:
 End with explicit options for next steps:
 
 > Findings above. Next step:
-> 1. File this as beads work via `/vibe:engineer` (multi-step) or `/vibe:express` (small).
-> 2. Ask another explore question.
-> 3. Done — just wanted to understand.
+>
+> 1. (small) File this as a code change via `/vibe:express`.
+> 2. (multi-stage) Continue work with a `/vibe:engineer`.
+> 3. Ask another explore question OR explore deeper.
+> 4. Done — just wanted to understand.
 
 Wait for a direct instruction. Do NOT start `/vibe:engineer` or `/vibe:express` automatically.
 

@@ -34,6 +34,22 @@ For each subtask, create a beads issue via `/vibe:bd-new` (or `bd create` direct
 
 Every issue must ship with the full Issue Shape — title, context, AC, out-of-scope, verification. Link dependencies between subtasks with `--deps` or `bd dep add`; disjoint subtasks (no `--deps`) will be executed in parallel in step 4.
 
+### Optional: model-routing hint
+
+Because you have actual code context while shaping, you are better positioned than the Execute orchestrator to judge complexity. For each issue, classify it against the rubric below and — if you have meaningful confidence — record the suggestion via `bd create --labels model:<tier>` plus a one-line justification in the issue notes:
+
+> `**Suggested model:** sonnet — single-file edit, well-bounded`
+
+Rubric:
+
+- **`model:haiku`** — trivially mechanical. Doc/config tweaks, one-liners, AC names exact files and the change is essentially dictated. No design judgment required.
+- **`model:sonnet`** — default. Well-bounded single-file or single-directory work. Clear AC, normal reasoning load.
+- **`model:opus`** — cross-cutting, ambiguous AC, multi-file architectural reasoning, or anything where a wrong call cascades.
+
+When uncertain, **omit the hint entirely** — this is the default. Over-labeling is discouraged. The cost is asymmetric: mis-routing *down* (labeling opus-grade work as haiku) wastes the cycle and aborts the worker; mis-routing *up* only costs more compute. The Execute orchestrator treats the label as an advisory floor — it MAY escalate (e.g., promote sonnet→opus when the batch is cross-cutting) but MUST NOT downgrade. So a missing label is strictly safer than a wrong label.
+
+Use the exact label syntax `model:haiku`, `model:sonnet`, or `model:opus` — nothing else.
+
 ## 4. Execute
 
 **Trivial path:** do the work with Edit/Write directly. Run any obvious verification (compile, test, the specific behavior the user asked about). Then commit the changed files directly:

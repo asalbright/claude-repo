@@ -10,8 +10,8 @@ Target: $ARGUMENTS
 Engineer Mode is for work that requires more than 3 subtasks. Its output is **beads issues**, not code. Execution happens in a separate mode — `/vibe:execute` — which can be invoked in this session or a future one. Mode may be started from:
 
 - A new session with a task description that looks too big for Express Mode.
-- As a follow-up to `/vibe:express` if the work turns out to be too big
-- As a follow-up from an exploratory `/vibe:explore` session that uncovered a non-trivial amount of work.
+- As a follow-up to `/vibe:express` session.
+- As a follow-up from an exploratory `/vibe:explore` session.
 
 Refuse to proceed if SessionStart status is anything other than `beads: ready`. Resolve the environment first.
 
@@ -58,6 +58,22 @@ Link dependencies with `bd dep add` as you go, or pass `--deps` at creation time
 For the Epic, use `--type epic`. For Stories, consider `--type feature`. For Tasks, `--type task` (the default). Use parent relationships (`--parent <epic-id>`) to build the hierarchy.
 
 Beads must be created sufficiently so that a new agent could `/vibe:execute` to pick up and execute without further clarification.
+
+### Optional: model-routing hint per work issue
+
+Because you have actual code context while shaping, you are better positioned than the Execute orchestrator to judge complexity. For each work node (task/subtask), classify it against the rubric below and — if you have meaningful confidence — record the suggestion via `bd create --labels model:<tier>` plus a one-line justification in the issue notes:
+
+> `**Suggested model:** sonnet — single-file edit, well-bounded`
+
+Rubric:
+
+- **`model:haiku`** — trivially mechanical. Doc/config tweaks, one-liners, AC names exact files and the change is essentially dictated. No design judgment required.
+- **`model:sonnet`** — default. Well-bounded single-file or single-directory work. Clear AC, normal reasoning load.
+- **`model:opus`** — cross-cutting, ambiguous AC, multi-file architectural reasoning, or anything where a wrong call cascades.
+
+When uncertain, **omit the hint entirely** — this is the default. Over-labeling is discouraged. The cost is asymmetric: mis-routing *down* (labeling opus-grade work as haiku) wastes the cycle and aborts the worker; mis-routing *up* only costs more compute. The Execute orchestrator treats the label as an advisory floor — it MAY escalate (e.g., promote sonnet→opus when the batch is cross-cutting) but MUST NOT downgrade. So a missing label is strictly safer than a wrong label.
+
+Use the exact label syntax `model:haiku`, `model:sonnet`, or `model:opus` — nothing else. Context nodes (epics, features) do not get model labels; the hint applies only to work nodes the orchestrator will dispatch.
 
 ## 5. Hand off
 
