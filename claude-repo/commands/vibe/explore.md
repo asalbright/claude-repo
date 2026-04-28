@@ -3,19 +3,21 @@ description: Explore Mode — read-only codebase research. Orchestrates explore-
 argument-hint: [question or topic to investigate]
 ---
 
+*Principles: 1 partial (scope before searching), 4 partial (lowest thoroughness that answers); 2, 3 n/a (read-only). See CLAUDE.md § First Principles.*
+
 # Explore Mode
 
 Target: $ARGUMENTS
 
-Explore Mode is for **understanding code, not changing it**. Output is a synthesized set of findings with file paths and line references — no beads issues, no edits.
+For **understanding code, not changing it**. Output is a synthesized set of findings with file paths and line references — no beads, no edits.
 
-If `$ARGUMENTS` is empty, ask the user for a one-line question or topic before proceeding.
+If `$ARGUMENTS` is empty, ask the user for a one-line question or topic.
 
-## 1. Scope the investigation
+## 1. Scope the investigation [P1] [P4]
 
-Restate the question in your own words and confirm with the user when the scope is ambiguous. Decide thoroughness based on the ask:
+Restate the question in your own words and confirm with the user when scope is ambiguous. Decide thoroughness based on the ask:
 
-- **quick** — a single lookup, "where is X defined", one clear file expected.
+- **quick** — single lookup, "where is X defined", one clear file expected.
 - **medium** — "how does feature Y work", spans a handful of files.
 - **very thorough** — "map the entire auth layer", cross-cutting, multiple conventions.
 
@@ -23,7 +25,7 @@ Pick the lowest thoroughness that will answer the question.
 
 ## 2. Dispatch explore-scout subagents
 
-Use the `Agent` tool with `subagent_type: explore-scout` (the user-defined subagent — NOT the built-in `Explore`). Dispatch 1–3 agents **in a single response message** when the question has naturally disjoint sub-questions (parallel search). Use one agent when the question is a single focused lookup.
+Use the `Agent` tool with `subagent_type: explore-scout` (the user-defined subagent — NOT the built-in `Explore`). Dispatch 1–3 agents **in a single response message** when the question has naturally disjoint sub-questions (parallel search). Use one agent for a single focused lookup.
 
 Each agent prompt must be self-contained:
 
@@ -31,20 +33,20 @@ Each agent prompt must be self-contained:
 - The thoroughness level (`quick`, `medium`, or `very thorough`).
 - Any known entry points (file paths the user mentioned, known symbols).
 
-The `explore-scout` subagent is tool-scoped read-only (Read/Glob/Grep only) and produces a standard report shape with clickable refs. You do not need to re-specify the output format in the prompt — the subagent's system prompt handles that.
+The `explore-scout` subagent is tool-scoped read-only (Read/Glob/Grep only) and produces a standard report shape. You don't need to re-specify output format.
 
 ## 3. Synthesize findings
 
-When agents return, merge their reports into a single answer for the user:
+When agents return, merge reports into a single answer:
 
-- Lead with a **direct answer** to the original question (1–3 sentences).
-- Follow with **key locations** as a bulleted list of clickable `[file:line](path#L)` references with one-line explanations.
-- Call out **gaps, surprises, or follow-up questions** the investigation surfaced.
+- Lead with a **direct answer** (1–3 sentences).
+- Follow with **key locations** as a bulleted list of clickable `[file:line](path#L)` refs with one-line explanations.
+- Call out **gaps, surprises, or follow-up questions**.
 - Do NOT dump raw subagent output — summarize.
 
 ## 4. Handoff
 
-End with explicit options for next steps:
+End with explicit next-step options:
 
 > Findings above. Next step:
 >
@@ -53,9 +55,9 @@ End with explicit options for next steps:
 > 3. Ask another explore question OR explore deeper.
 > 4. Done — just wanted to understand.
 
-Wait for a direct instruction. Do NOT start `/vibe:engineer` or `/vibe:express` automatically.
+Wait for direct instruction. Do NOT start `/vibe:engineer` or `/vibe:express` automatically.
 
 ## Non-goals
 
-- Explore Mode does NOT create beads issues. If the investigation reveals a bug or tech-debt item, mention it in the findings and let the user decide whether to file via `/vibe:bd-new` — the Discovery Rule does not apply here because Explore is read-only by contract.
-- Explore Mode does NOT edit files, run build/test commands, or make network calls beyond what subagents need for search.
+- Read-only — no edits, no builds, no beads creation.
+- Discovery Rule does NOT apply (see CLAUDE.md). Surface findings under "Gaps / follow-ups"; the user decides whether to file via `/vibe:bd-new`.

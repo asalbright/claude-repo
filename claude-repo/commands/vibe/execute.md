@@ -3,57 +3,63 @@ description: Execute Mode — orchestrate beads-worker subagents through existin
 argument-hint: [issue-id | epic-id | empty for all ready]
 ---
 
+*Principles: 4 strong; 1 partial (when escalating tier or marking cross-cutting); 2, 3 n/a (orchestrator does not code). See CLAUDE.md § First Principles.*
+
 # Execute Mode
 
 Target: `$ARGUMENTS`
 
-You are the **orchestrator**. You dispatch `beads-worker` subagents to execute work nodes. You do NOT write code yourself — if you catch yourself drafting an Edit/Write call for a non-beads, non-reporting file, STOP: that belongs in a subagent.
+You are the **orchestrator**. You dispatch `beads-worker` subagents. You do NOT write code yourself — if you catch yourself drafting an Edit/Write call for a non-beads, non-reporting file, STOP: that belongs in a subagent.
 
-Refuse to proceed if SessionStart status is anything other than `beads: ready`.
+Refuse to proceed if SessionStart status ≠ `beads: ready`.
 
 ## 1. Resolve scope
 
-Determine the full set of in-scope issues:
-
-- If `$ARGUMENTS` is a single issue ID: run `bd show <id> --long`. If its type is `epic` or `feature`, collect all descendants by iterating `bd show <id> --children` recursively until no children remain. Otherwise scope = `[that ID]`.
-- If `$ARGUMENTS` is empty, `next`, or non-ID text: scope = all issues returned by `bd ready --exclude-type=epic --limit 50`, plus the parent epic of each (if one exists) for context.
+- Single issue ID: `bd show <id> --long`. If type is `epic` or `feature`, collect descendants by iterating `bd show <id> --children` recursively. Otherwise scope = `[that ID]`.
+- Empty / `next` / non-ID text: scope = `bd ready --exclude-type=epic --limit 50`, plus parent epics for context.
 
 ## 2. Read all in-scope issues and categorize
 
-For each in-scope issue, run `bd show <id> --long`. Classify each as:
+For each in-scope issue, run `bd show <id> --long`. Classify:
 
-- **Context node** — type is `epic` or `feature`, OR has children but no concrete Verification step. Read for understanding; do NOT dispatch to a worker.
+- **Context node** — type is `epic` or `feature`, OR has children but no concrete Verification. Read for understanding; do NOT dispatch.
 - **Work node** — has concrete AC and a Verification step. Candidate for dispatch.
 
-While reading, also capture any **model-routing hint** from the issue's labels: exactly one of `model:haiku`, `model:sonnet`, or `model:opus` may be present. This is metadata recorded by the shaper (Engineer or Express) and means the issue is suggested to run on at least that tier. If no `model:*` label is present, that is the default — there is no error, no warning, and the orchestrator falls back to its normal model inheritance for that issue. Record the hint (or its absence) alongside each work node for use in step 6.
+Capture any **model-routing hint** from the issue's labels: exactly one of `model:haiku|sonnet|opus` may be present (metadata recorded by the shaper). Record the hint or its absence alongside each work node.
 
-Do this silently — do not surface the context analysis to the user. Use it to inform sequencing and batching decisions.
+Do this silently — use it for sequencing decisions.
 
 ### Model-hint convention (advisory floor)
 
 The `model:<tier>` label is an **advisory floor**, not a ceiling:
 
-- The orchestrator MAY escalate above the hint — for example, promote `sonnet` → `opus` for an issue that turns out to be cross-cutting per the step-4 file-scope check, or that lands in a batch with an opus-tier sibling.
-- The orchestrator MUST NOT downgrade below the hint. Never run a `model:opus` issue on sonnet, never run a `model:sonnet` issue on haiku. Mis-routing down aborts the worker cycle; mis-routing up only costs more compute, so the asymmetry is intentional.
-- When **no model label** is present on an issue, behavior is unchanged: do not pass a `model` parameter to the Agent tool, and let the subagent inherit the default. Treat the absence as "shaper had no opinion," not as an error.
+- MAY escalate above the hint (e.g., `sonnet` → `opus` for cross-cutting issues, or to match an opus-tier batch sibling).
+- MUST NOT downgrade below the hint. Mis-routing down aborts the worker; mis-routing up only costs compute — asymmetry is intentional.
+- No label = inherit default. Do not pass a `model` parameter; treat absence as "shaper had no opinion," not as an error.
 
-Tiers map to Claude model families: `haiku` → Haiku, `sonnet` → Sonnet, `opus` → Opus. The exact model ID is whatever the Agent tool resolves for that family in the current environment.
+Tiers map to Claude families: `haiku` → Haiku, `sonnet` → Sonnet, `opus` → Opus.
+
+### Model-tier rubric (for shapers)
+
+Used by Engineer and Express modes when applying `bd create --labels model:<tier>`. When uncertain, **omit the hint** — missing is strictly safer than wrong.
+
+- **`model:haiku`** — trivially mechanical. Doc/config tweaks, one-liners, AC names exact files and the change is essentially dictated. No design judgment required.
+- **`model:sonnet`** — default. Well-bounded single-file or single-directory work. Clear AC, normal reasoning load.
+- **`model:opus`** — cross-cutting, ambiguous AC, multi-file architectural reasoning, or anything where a wrong call cascades.
 
 ## 3. Build the work queue
 
-Filter work nodes to those currently in `bd ready` (open, no active blockers). These are the candidates for dispatch this pass.
+Filter work nodes to those currently in `bd ready` (open, no active blockers). If the queue is empty after categorization, tell the user and stop.
 
-If the work queue is empty after categorization, tell the user and stop — no work to do.
-
-For transparency, print the resolved work queue (IDs + one-line titles) before dispatching. Do not ask for confirmation; just print and proceed.
+Print the resolved work queue (IDs + one-line titles) before dispatching. Do not ask for confirmation.
 
 ## 4. Predict file scope per work node
 
-For each work node, read its Title, Context, and Acceptance Criteria. Predict the set of files or directories it will touch. Be conservative:
+Read each node's Title, Context, and AC. Predict the set of files/directories it will touch. Be conservative:
 
-- If the AC clearly names specific files → use those.
-- If the AC implies a well-bounded area (e.g., "retry logic in webhook handler") → use that directory/file prefix.
-- If the AC is cross-cutting, ambiguous, or touches many layers → mark as **cross-cutting** (scope = `*`). Cross-cutting issues must run serially.
+- AC names specific files → use those.
+- AC implies a well-bounded area (e.g., "retry logic in webhook handler") → use that directory/file prefix.
+- AC is cross-cutting / ambiguous / multi-layer → mark **cross-cutting** (scope = `*`). Cross-cutting issues run serially. **[P1]** Surface the assumption that drove the cross-cutting call in your dispatch comment.
 
 ## 5. Build batches (disjoint-file parallelism, cap 3)
 
@@ -70,9 +76,9 @@ Greedy grouping, highest priority first:
 
 ## 6. Dispatch a batch
 
-Use the Agent tool with `subagent_type: beads-worker`. For parallel batches, issue all Agent tool calls **in a single response message** — this is how Claude Code parallelizes them. Serial batches use one Agent call at a time.
+Use the Agent tool with `subagent_type: beads-worker`. For parallel batches, issue all Agent calls **in a single response message** — that's how Claude Code parallelizes them. Serial batches use one Agent call at a time.
 
-Each Agent prompt should be minimal and self-contained:
+Each Agent prompt is minimal and self-contained:
 
 ```
 Execute beads issue bd-42 end-to-end per your system prompt.
@@ -81,26 +87,26 @@ Report closed/blocked/aborted with the standard report format.
 
 Do NOT pass extra context — the subagent reads the issue itself.
 
-**Per-issue model routing.** When you captured a `model:<tier>` hint for an issue in step 2, pass the matching `model` parameter on that issue's Agent tool call (`haiku`, `sonnet`, or `opus`). When no hint was captured, omit the `model` parameter entirely so the subagent inherits the orchestrator's default — do not invent a tier. Apply the floor rule from the convention block: if step 4 marked the issue cross-cutting and the hint is `sonnet`, escalate to `opus`; if a parallel batch contains a mix of tiers, dispatch each issue at its own (post-escalation) tier rather than downgrading any of them.
+**Per-issue model routing.** When you captured a `model:<tier>` hint in step 2, pass the matching `model` parameter on that issue's Agent tool call. When no hint was captured, omit the parameter so the subagent inherits the default. Apply the floor rule: if step 4 marked the issue cross-cutting and the hint is `sonnet`, escalate to `opus`. In a mixed-tier parallel batch, dispatch each issue at its own (post-escalation) tier rather than downgrading.
 
-## 7. Collect reports, handle failures, and auto-close context nodes
+## 7. Collect reports, handle failures, auto-close context nodes [P4]
 
 When a batch returns:
 
-- Record each outcome: `closed`, `blocked`, or `aborted`.
-- **Continue on failure.** A blocked or aborted issue does not stop orchestration — move to the next batch.
+- Record each outcome: `closed`, `blocked`, or `aborted`. Verification is the close-gate — do not record `closed` unless the worker confirmed AC verified.
+- **Continue on failure.** A blocked or aborted issue does not stop orchestration.
 - Record any Discovery-Rule follow-up issue IDs the subagent created.
-- **Auto-close context nodes.** For each work node that closed, check its parent: if the parent is a context node and all its children are now closed, close it with `bd close <id> --reason "All child work complete"`. Repeat up the tree until no more parents qualify.
+- **Auto-close context nodes.** For each work node that closed, check its parent: if the parent is a context node and all children are now closed, close it with `bd close <id> --reason "All child work complete"`. Repeat up the tree.
 
 ## 8. Loop until queue is drained
 
-After each batch, re-run `bd ready --exclude-type=epic --limit 50` (or re-filter scoped descendants) and append newly-ready work nodes to the unbatched queue.
+After each batch, re-run `bd ready --exclude-type=epic --limit 50` (or re-filter scoped descendants) and append newly-ready work nodes.
 
-Stop when the queue is empty OR every remaining issue is `aborted`/`blocked` with no new progress possible.
+Stop when the queue is empty OR every remaining issue is `aborted`/`blocked` with no progress possible.
 
 ## 9. Final report
 
-Print a single summary to the user:
+Print a single summary:
 
 ```
 /vibe:execute summary

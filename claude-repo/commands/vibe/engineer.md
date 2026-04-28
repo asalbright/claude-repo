@@ -3,43 +3,42 @@ description: Engineer Mode — produce a set of well-shaped beads issues for mul
 argument-hint: [brief description of the work to plan]
 ---
 
+*Principles: 1, 2, 4 strong; 3 n/a (no code edits). See CLAUDE.md § First Principles.*
+
 # Engineer Mode
 
 Target: $ARGUMENTS
 
-Engineer Mode is for work that requires more than 3 subtasks. Its output is **beads issues**, not code. Execution happens in a separate mode — `/vibe:execute` — which can be invoked in this session or a future one. Mode may be started from:
+For work that requires more than 3 subtasks. Output is **beads issues**, not code. Execution happens via `/vibe:execute`. Entry points:
 
-- A new session with a task description that looks too big for Express Mode.
-- As a follow-up to `/vibe:express` session.
-- As a follow-up from an exploratory `/vibe:explore` session.
+- New session with a task too big for Express Mode.
+- Follow-up to `/vibe:express` or `/vibe:explore`.
 
-Refuse to proceed if SessionStart status is anything other than `beads: ready`. Resolve the environment first.
+Refuse to proceed if SessionStart status ≠ `beads: ready`.
 
-## 1. Clarify before planning
+## 1. Clarify before planning [P1]
 
-Ask the user clarifying questions until the scope, constraints, and definition of done are unambiguous. Specifically confirm:
+Ask the user clarifying questions until scope, constraints, and definition of done are unambiguous. Specifically confirm:
 
 - What problem is being solved and why now.
 - The boundary between in-scope and out-of-scope.
-- Any hard constraints (deadlines, compatibility, dependencies on other teams).
+- Hard constraints (deadlines, compatibility, cross-team deps).
 - What "done" looks like — the user-observable outcome.
 
-Do not skip this step. Vague Engineer Mode input produces vague beads issues, which is the failure mode we're trying to prevent.
+Do not skip [P1]. If the user's answers reference parts of the codebase you're unfamiliar with, dispatch `explore-scout` before step 2.
 
-If the user's answers reference parts of the codebase you're unfamiliar with, use the `explore-scout` subagent to gather context before proceeding to step 2 — a plan built on a misread of the code will need to be thrown away.
+## 2. Build the minimal graph [P2]
 
-## 2. Build the minimal graph
-
-Build the smallest graph that correctly captures the work. The graph is a contract with the executor — it reads all nodes for context and dispatches workers against work nodes. Build it accordingly; do not add levels for organizational tidiness.
+Smallest graph that correctly captures the work. The graph is a contract with the executor.
 
 Available node types (use only what the work requires):
 
-- **Task** — the default unit of executable work. One task = one worker dispatch = roughly one PR. Always needs concrete AC and a Verification step.
-- **Epic** — use when the work has multiple independent groupings that may span sessions or ship partially.
-- **Feature/Story** — use when distinct capabilities exist that usefully group tasks and provide context. Omit if the grouping adds no real information.
-- **Subtask** — use when a task has sequential implementation steps that benefit from independent tracking.
+- **Task** — default unit of executable work. One task = one worker dispatch ≈ one PR. Always needs concrete AC and a Verification step.
+- **Epic** — multiple independent groupings that may span sessions or ship partially.
+- **Feature/Story** — distinct capabilities that usefully group tasks. Omit if grouping adds no information.
+- **Subtask** — sequential implementation steps that benefit from independent tracking.
 
-Every work node (task, subtask) must have concrete AC and a Verification step. Context nodes (epics, features) describe the "why" — they do not need a Verification step but must have clear context so the executor understands the plan.
+Every work node (task, subtask) must have concrete AC and a Verification step **[P4]**. Context nodes (epics, features) describe the "why" — no Verification needed but must have clear context.
 
 ## 3. Verify the plan with the user
 
@@ -47,33 +46,25 @@ Show the full hierarchy with proposed titles and dependency links. Get explicit 
 
 ## 4. Create beads issues
 
-Create the beads issues **one at a time** — invoke `/vibe:bd-new` sequentially, waiting for each to return its issue ID before starting the next. Do NOT batch multiple `/vibe:bd-new` calls into a single response: the `bd` CLI takes a lock on its store and parallel `bd create` calls will fail.
+Create issues **one at a time** — invoke `/vibe:bd-new` sequentially, waiting for each ID before the next. Do NOT batch (`bd` CLI lock — concurrent calls fail).
 
-Parallelism belongs in the **dependency graph**, not the creation step. Shape the graph so that independent leaves have no `--deps` between them — `/vibe:execute` will later fan them out across `beads-worker` subagents in parallel automatically.
+Parallelism belongs in the **dependency graph**, not creation. Shape the graph so independent leaves have no `--deps` between them — `/vibe:execute` fans them out to `beads-worker` subagents automatically.
 
-Each issue must ship with the full Issue Shape (context, AC, out of scope, verification, dependencies). Do not batch-create skeleton issues and backfill fields later.
+Each issue must ship with the full Issue Shape (context, AC, out of scope, verification, dependencies). Do not batch-create skeletons and backfill.
 
-Link dependencies with `bd dep add` as you go, or pass `--deps` at creation time.
+Link dependencies with `bd dep add` as you go, or pass `--deps` at creation. For Epics use `--type epic`, Stories `--type feature`, Tasks `--type task` (default). Use `--parent <epic-id>` for hierarchy.
 
-For the Epic, use `--type epic`. For Stories, consider `--type feature`. For Tasks, `--type task` (the default). Use parent relationships (`--parent <epic-id>`) to build the hierarchy.
-
-Beads must be created sufficiently so that a new agent could `/vibe:execute` to pick up and execute without further clarification.
+Beads must be sufficiently shaped that a new agent could `/vibe:execute` to pick up without further clarification.
 
 ### Optional: model-routing hint per work issue
 
-Because you have actual code context while shaping, you are better positioned than the Execute orchestrator to judge complexity. For each work node (task/subtask), classify it against the rubric below and — if you have meaningful confidence — record the suggestion via `bd create --labels model:<tier>` plus a one-line justification in the issue notes:
+You have actual code context while shaping — better positioned than Execute to judge complexity. For each work node, classify per the rubric (see execute.md § Model-tier rubric) and (if confident) record via:
 
-> `**Suggested model:** sonnet — single-file edit, well-bounded`
+```
+bd create --labels model:<tier>
+```
 
-Rubric:
-
-- **`model:haiku`** — trivially mechanical. Doc/config tweaks, one-liners, AC names exact files and the change is essentially dictated. No design judgment required.
-- **`model:sonnet`** — default. Well-bounded single-file or single-directory work. Clear AC, normal reasoning load.
-- **`model:opus`** — cross-cutting, ambiguous AC, multi-file architectural reasoning, or anything where a wrong call cascades.
-
-When uncertain, **omit the hint entirely** — this is the default. Over-labeling is discouraged. The cost is asymmetric: mis-routing *down* (labeling opus-grade work as haiku) wastes the cycle and aborts the worker; mis-routing *up* only costs more compute. The Execute orchestrator treats the label as an advisory floor — it MAY escalate (e.g., promote sonnet→opus when the batch is cross-cutting) but MUST NOT downgrade. So a missing label is strictly safer than a wrong label.
-
-Use the exact label syntax `model:haiku`, `model:sonnet`, or `model:opus` — nothing else. Context nodes (epics, features) do not get model labels; the hint applies only to work nodes the orchestrator will dispatch.
+Plus a one-line justification in notes: `**Suggested model:** sonnet — single-file edit, well-bounded`. Context nodes get no model labels. See execute.md § Model-hint convention for orchestrator behavior.
 
 ## 5. Hand off
 
