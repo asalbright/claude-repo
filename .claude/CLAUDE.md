@@ -17,9 +17,8 @@ Version-controlled Claude Code configuration. The `claude-repo/` subdirectory mi
     ├── CLAUDE.md          # Symlinked to ~/.claude/CLAUDE.md (global workflow rules)
     ├── settings.json      # Symlinked to ~/.claude/settings.json
     ├── agents/            # Symlinked to ~/.claude/agents/
-    ├── commands/          # Symlinked to ~/.claude/commands/
     ├── scripts/           # Symlinked to ~/.claude/scripts/
-    └── skills/            # Symlinked to ~/.claude/skills/
+    └── skills/            # Symlinked to ~/.claude/skills/ (workflow modes: vibe.*)
 ```
 
 ## Editing rules

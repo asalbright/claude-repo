@@ -1,6 +1,8 @@
 ---
+name: vibe.execute
 description: Execute Mode — orchestrate beads-worker subagents through existing ready beads issues. Handles one ID, a filter, or drains bd ready entirely.
 argument-hint: [issue-id | epic-id | empty for all ready]
+allowed-tools: Bash, Read, Glob, Grep, Agent
 ---
 
 *Principles: 4 strong; 1 partial (when escalating tier or marking cross-cutting); 2, 3 n/a (orchestrator does not code). See CLAUDE.md § First Principles.*
@@ -109,7 +111,7 @@ Stop when the queue is empty OR every remaining issue is `aborted`/`blocked` wit
 Print a single summary:
 
 ```
-/vibe:execute summary
+/vibe.execute summary
 ─────────────────────
 Closed:  N issues (bd-42, bd-43, ...)
 Blocked: M issues (bd-44 — <reason>, ...)

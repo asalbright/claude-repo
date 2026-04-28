@@ -1,6 +1,8 @@
 ---
+name: vibe.express
 description: Express Mode — autonomously plan, file small beads, and execute them (via subagents when parallel helps). For small-to-medium tasks without prior planning.
 argument-hint: [task description]
+allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Agent, AskUserQuestion, Skill
 ---
 
 *Principles: 1, 2, 3, 4 all apply (most coding-heavy mode). See CLAUDE.md § First Principles.*
@@ -22,17 +24,17 @@ Classify the task:
 
 - **Trivial** (skip beads entirely): single-file edit under ~10 lines, typo/comment fix, one-line debug tweak, read-only investigation. → Go to step 4 (execute inline, no issues). You are permitted to write code.
 - **Express-sized** (1–3 subtasks): proceed with this mode. You are no longer permitted to write code — you MUST file beads and dispatch to `beads-worker` subagents for execution.
-- **Too big** (> 3 subtasks, multi-layer refactor, or cross-team dependencies): stop and tell the user `/vibe:engineer` is the right mode instead. Ask for confirmation before continuing under `/vibe:express`.
+- **Too big** (> 3 subtasks, multi-layer refactor, or cross-team dependencies): stop and tell the user `/vibe.engineer` is the right mode instead. Ask for confirmation before continuing under `/vibe.express`.
 
 ## 2. Light planning (no heavyweight hierarchy) [P2]
 
 Break the task into 1–3 subtasks. Do NOT build an Epic > Story > Task > Subtask tree — that's Engineer Mode's job. A flat list is fine.
 
-Predict the file scope for each subtask (same logic as `/vibe:execute` step 4). This informs whether execution can parallelize.
+Predict the file scope for each subtask (same logic as `/vibe.execute` step 4). This informs whether execution can parallelize.
 
 ## 3. File beads
 
-For each subtask, create a beads issue via `/vibe:bd-new` (or `bd create` directly if in a subagent context), **one at a time** (bd CLI lock — sequential only). Parallelism happens in step 4.
+For each subtask, create a beads issue via `/vibe.bd-new` (or `bd create` directly if in a subagent context), **one at a time** (bd CLI lock — sequential only). Parallelism happens in step 4.
 
 Every issue must ship with the full Issue Shape — title, context, AC, out-of-scope, verification. Link dependencies between subtasks with `--deps` or `bd dep add`; disjoint subtasks (no `--deps`) execute in parallel in step 4.
 
@@ -70,7 +72,7 @@ Do NOT push. Report what changed and note "tracking skipped — trivial work."
 Concise summary to the user:
 
 ```text
-/vibe:express summary
+/vibe.express summary
 ──────────────────────
 Task: <original request>
 Subtasks: N (closed: X, failed: Y)

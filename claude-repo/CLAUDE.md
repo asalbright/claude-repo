@@ -50,12 +50,12 @@ Behavioral guidelines to reduce common coding mistakes. Mode-specific applicabil
 
 Classify the user's intent before touching code:
 
-- **Engineer Mode** — `/vibe:engineer` — user wants a plan, not execution. Signals: "help me design", "let's think about", multi-step refactor, >3 subtasks. Ends with beads issues filed and an explicit handoff.
-- **Execute Mode** — `/vibe:execute` — user wants existing beads worked. Signals: "work the queue", "continue the plan", a specific issue ID. Orchestrates `beads-worker` subagents.
-- **Express Mode** — `/vibe:express` — user hands you a task and wants it done now, no prior plan. Signals: small/medium scope, imperative phrasing, no reference to an existing plan. Autonomously plans, files beads, executes.
-- **Explore Mode** — `/vibe:explore` — user wants to understand code, not change it. Signals: "how does X work", "where is Y", "what uses Z". Orchestrates `explore-scout` subagents; produces findings only.
+- **Engineer Mode** — `/vibe.engineer` — user wants a plan, not execution. Signals: "help me design", "let's think about", multi-step refactor, >3 subtasks. Ends with beads issues filed and an explicit handoff.
+- **Execute Mode** — `/vibe.execute` — user wants existing beads worked. Signals: "work the queue", "continue the plan", a specific issue ID. Orchestrates `beads-worker` subagents.
+- **Express Mode** — `/vibe.express` — user hands you a task and wants it done now, no prior plan. Signals: small/medium scope, imperative phrasing, no reference to an existing plan. Autonomously plans, files beads, executes.
+- **Explore Mode** — `/vibe.explore` — user wants to understand code, not change it. Signals: "how does X work", "where is Y", "what uses Z". Orchestrates `explore-scout` subagents; produces findings only.
 
-**Ambiguous?** → Express (recoverable, files beads as it goes). **Read-only intent?** → Explore (no edits). Only ask when falling back could cause harm. The full procedure for each mode lives in its slash command file.
+**Ambiguous?** → Express (recoverable, files beads as it goes). **Read-only intent?** → Explore (no edits). Only ask when falling back could cause harm. The full procedure for each mode lives in its skill file.
 
 ## Beads Environment
 
@@ -86,6 +86,6 @@ Applies to Engineer, Execute, Express, and Subagent Mode. **Does NOT apply in Ex
 
 If during any task you discover a new issue, bug, scope gap, tech-debt item, or follow-up NOT covered by the current beads issue:
 
-- File a new beads issue immediately via `/vibe:bd-new` (or `bd create` directly if you're a subagent). Do NOT silently expand scope. Do NOT only mention it in chat.
+- File a new beads issue immediately via `/vibe.bd-new` (or `bd create` directly if you're a subagent). Do NOT silently expand scope. Do NOT only mention it in chat.
 - Link with `bd dep add` when there's a real dependency.
 - Stay focused on the original task — the new issue is a handoff, not a pivot.

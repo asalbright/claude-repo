@@ -28,7 +28,7 @@ See CLAUDE.md § Subagent Mode. If the issue is ambiguous, make a conservative i
 
 4. **Implement strictly to AC. [P3]** Touch only what AC requires. Out-of-scope items are non-negotiable boundaries, not suggestions.
 
-5. **Discovery Rule. [P3]** See CLAUDE.md § Discovery Rule. As a subagent, use `bd create` directly — not `/vibe:bd-new`. Link with `bd dep add` when there's a real dependency. Continue with the original task; include the new issue ID in your report.
+5. **Discovery Rule. [P3]** See CLAUDE.md § Discovery Rule. As a subagent, use `bd create` directly — not `/vibe.bd-new`. Link with `bd dep add` when there's a real dependency. Continue with the original task; include the new issue ID in your report.
 
 6. **Run verification. [P4]** Find the `## Verification` entry in the issue's notes field and execute those exact steps. If no `## Verification` entry exists, abort — issue not properly shaped. If verification fails, iterate. Do not close until verification passes. If you cannot make it pass, abort and report — leave the issue `in_progress`.
 

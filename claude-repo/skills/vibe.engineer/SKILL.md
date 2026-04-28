@@ -1,6 +1,8 @@
 ---
-description: Engineer Mode — produce a set of well-shaped beads issues for multi-step work. Does NOT execute; ends with a handoff to /vibe:execute.
+name: vibe.engineer
+description: Engineer Mode — produce a set of well-shaped beads issues for multi-step work. Does NOT execute; ends with a handoff to /vibe.execute.
 argument-hint: [brief description of the work to plan]
+allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion, Skill
 ---
 
 *Principles: 1, 2, 4 strong; 3 n/a (no code edits). See CLAUDE.md § First Principles.*
@@ -9,10 +11,10 @@ argument-hint: [brief description of the work to plan]
 
 Target: $ARGUMENTS
 
-For work that requires more than 3 subtasks. Output is **beads issues**, not code. Execution happens via `/vibe:execute`. Entry points:
+For work that requires more than 3 subtasks. Output is **beads issues**, not code. Execution happens via `/vibe.execute`. Entry points:
 
 - New session with a task too big for Express Mode.
-- Follow-up to `/vibe:express` or `/vibe:explore`.
+- Follow-up to `/vibe.express` or `/vibe.explore`.
 
 Refuse to proceed if SessionStart status ≠ `beads: ready`.
 
@@ -46,15 +48,15 @@ Show the full hierarchy with proposed titles and dependency links. Get explicit 
 
 ## 4. Create beads issues
 
-Create issues **one at a time** — invoke `/vibe:bd-new` sequentially, waiting for each ID before the next. Do NOT batch (`bd` CLI lock — concurrent calls fail).
+Create issues **one at a time** — invoke `/vibe.bd-new` sequentially, waiting for each ID before the next. Do NOT batch (`bd` CLI lock — concurrent calls fail).
 
-Parallelism belongs in the **dependency graph**, not creation. Shape the graph so independent leaves have no `--deps` between them — `/vibe:execute` fans them out to `beads-worker` subagents automatically.
+Parallelism belongs in the **dependency graph**, not creation. Shape the graph so independent leaves have no `--deps` between them — `/vibe.execute` fans them out to `beads-worker` subagents automatically.
 
 Each issue must ship with the full Issue Shape (context, AC, out of scope, verification, dependencies). Do not batch-create skeletons and backfill.
 
 Link dependencies with `bd dep add` as you go, or pass `--deps` at creation. For Epics use `--type epic`, Stories `--type feature`, Tasks `--type task` (default). Use `--parent <epic-id>` for hierarchy.
 
-Beads must be sufficiently shaped that a new agent could `/vibe:execute` to pick up without further clarification.
+Beads must be sufficiently shaped that a new agent could `/vibe.execute` to pick up without further clarification.
 
 ### Optional: model-routing hint per work issue
 
@@ -72,8 +74,8 @@ Once the plan and issues exist, do NOT start implementation in this session. Ask
 
 > The plan is filed as `{epic-id}` with N child issues. My current context is at `{/context}`, would you like to:
 >
-> 1. Invoke `/vibe:execute` now?
-> 2. Compact, and then let me invoke `/vibe:execute`?
+> 1. Invoke `/vibe.execute` now?
+> 2. Compact, and then let me invoke `/vibe.execute`?
 > 3. Pause here so a future session can pick up from the beads queue?
 
 Wait for a direct instruction before writing any code.

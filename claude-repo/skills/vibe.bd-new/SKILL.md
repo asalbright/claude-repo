@@ -1,6 +1,8 @@
 ---
+name: vibe.bd-new
 description: Create a beads issue using the required Issue Shape (title, context, AC, out of scope, verification, deps).
 argument-hint: [brief description of the work]
+allowed-tools: Bash, Read, Glob, Grep, AskUserQuestion
 ---
 
 *Principles: 1, 2, 4 strong; 3 n/a (no code edits). See CLAUDE.md § First Principles.*
@@ -22,7 +24,7 @@ Every issue must be self-contained — an agent with no knowledge of this conver
 
 ## Procedure
 
-> Sequential only — `bd` CLI takes a lock during create; concurrent `/vibe:bd-new` calls will fail.
+> Sequential only — `bd` CLI takes a lock during create; concurrent `/vibe.bd-new` calls will fail.
 
 1. Draft title and each section from `$ARGUMENTS` plus surrounding conversation context.
 2. **[P1]** If any section would be empty or vague (especially AC and Verification), ask the user to clarify. Do not fabricate acceptance criteria.

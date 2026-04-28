@@ -1,6 +1,8 @@
 ---
+name: vibe.explore
 description: Explore Mode — read-only codebase research. Orchestrates explore-scout subagents to answer questions; does NOT file beads or edit code.
 argument-hint: [question or topic to investigate]
+allowed-tools: Bash, Read, Glob, Grep, Agent, AskUserQuestion
 ---
 
 *Principles: 1 partial (scope before searching), 4 partial (lowest thoroughness that answers); 2, 3 n/a (read-only). See CLAUDE.md § First Principles.*
@@ -50,14 +52,14 @@ End with explicit next-step options:
 
 > Findings above. Next step:
 >
-> 1. (small) File this as a code change via `/vibe:express`.
-> 2. (multi-stage) Continue work with a `/vibe:engineer`.
+> 1. (small) File this as a code change via `/vibe.express`.
+> 2. (multi-stage) Continue work with a `/vibe.engineer`.
 > 3. Ask another explore question OR explore deeper.
 > 4. Done — just wanted to understand.
 
-Wait for direct instruction. Do NOT start `/vibe:engineer` or `/vibe:express` automatically.
+Wait for direct instruction. Do NOT start `/vibe.engineer` or `/vibe.express` automatically.
 
 ## Non-goals
 
 - Read-only — no edits, no builds, no beads creation.
-- Discovery Rule does NOT apply (see CLAUDE.md). Surface findings under "Gaps / follow-ups"; the user decides whether to file via `/vibe:bd-new`.
+- Discovery Rule does NOT apply (see CLAUDE.md). Surface findings under "Gaps / follow-ups"; the user decides whether to file via `/vibe.bd-new`.
