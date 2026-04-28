@@ -35,7 +35,6 @@ link "settings.json"
 link "CLAUDE.md"
 link "skills"
 link "agents"
-link "commands"
 link "scripts"
 
 echo ""

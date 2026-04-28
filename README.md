@@ -11,7 +11,6 @@ Everything that installs into `~/.claude/` lives under the `claude-repo/` subdir
 | `claude-repo/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | `claude-repo/settings.json` | `~/.claude/settings.json` |
 | `claude-repo/agents/` | `~/.claude/agents/` |
-| `claude-repo/commands/` | `~/.claude/commands/` |
 | `claude-repo/scripts/` | `~/.claude/scripts/` |
 | `claude-repo/skills/` | `~/.claude/skills/` |
 
@@ -63,9 +62,9 @@ model: sonnet
 System prompt for the agent...
 ```
 
-### A slash command
+### A workflow mode (skill)
 
-Drop a markdown file into `claude-repo/commands/` (or a namespaced subdirectory like `commands/vibe/`). The path becomes the command name (e.g. `commands/vibe/execute.md` → `/vibe:execute`).
+Workflow modes (e.g. `/vibe.execute`, `/vibe.engineer`) live under `claude-repo/skills/` as SKILL.md files. Create `claude-repo/skills/<name>/SKILL.md` with the required frontmatter (see skill example above). The skill name becomes the invocation (e.g. `skills/vibe.execute/SKILL.md` → `/vibe.execute`).
 
 ### A hook script
 
