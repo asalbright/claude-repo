@@ -12,6 +12,7 @@ Everything that installs into `~/.claude/` lives under the `claude-repo/` subdir
 | `claude-repo/settings.json` | `~/.claude/settings.json` |
 | `claude-repo/agents/` | `~/.claude/agents/` |
 | `claude-repo/commands/` | `~/.claude/commands/` |
+| `claude-repo/hooks/` | `~/.claude/hooks/` |
 | `claude-repo/scripts/` | `~/.claude/scripts/` |
 | `claude-repo/skills/` | `~/.claude/skills/` |
 
@@ -67,9 +68,43 @@ System prompt for the agent...
 
 Drop a markdown file into `claude-repo/commands/` (or a namespaced subdirectory like `commands/vibe/`). The path becomes the command name (e.g. `commands/vibe/execute.md` → `/vibe:execute`).
 
-### A hook script
+### A script
 
 Add the script to `claude-repo/scripts/` and reference it from `claude-repo/settings.json` as `~/.claude/scripts/<name>` — the symlink resolves the path at runtime.
+
+### A hook
+
+Create an executable script in `claude-repo/hooks/` and register it in `claude-repo/settings.json` under the `hooks` object with the appropriate event name.
+
+Example: `WorktreeCreate` hook that runs when `claude -w <name>` is called:
+
+```bash
+# claude-repo/hooks/worktree-create.sh
+#!/bin/bash
+# Read JSON from stdin, process, output to stdout
+INPUT=$(cat)
+# ... hook logic here
+echo "$RESULT"
+```
+
+Then register in `settings.json`:
+
+```json
+"hooks": {
+  "WorktreeCreate": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "~/.claude/hooks/worktree-create.sh"
+        }
+      ]
+    }
+  ]
+}
+```
+
+Available hook events: `SessionStart`, `WorktreeCreate`, `PreToolUse`, `PostToolUse`, etc.
 
 ## Settings
 
