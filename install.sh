@@ -37,6 +37,7 @@ link "skills"
 link "agents"
 link "commands"
 link "scripts"
+link "hooks"
 
 echo ""
 echo "Done."
